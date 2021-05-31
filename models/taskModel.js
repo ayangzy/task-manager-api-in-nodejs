@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const taskSchema = mongoose.Schema({
   description: {
-    type: Text,
-    trim: true,
+    type: String,
     required: [true, "the task description is required"],
+    trim: true,
   },
 
   completed: {
