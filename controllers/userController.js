@@ -60,6 +60,25 @@ exports.getSingleUser = async (req, res) => {
   }
 };
 
+exports.login = async (req, res) => {
+  try {
+    const user = await User.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+    res.status(200).send({
+      status: "success",
+      message: "successfully logged in",
+      user,
+    });
+  } catch (error) {
+    res.status("400").send({
+      status: "fail",
+      message: error,
+    });
+  }
+};
+
 exports.updateUser = async (req, res) => {
   try {
     const updates = Object.keys(req.body);
