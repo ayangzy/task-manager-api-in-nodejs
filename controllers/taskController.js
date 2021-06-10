@@ -62,7 +62,26 @@ exports.getSingleTask = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
   try {
-    const task = await Task.findByIdAndUpdate(req.params.id, req.body);
+    const updates = Object.keys(req.body);
+    const allowUpdates = ["description", "completed"];
+    const isValidateOperation = updates.every((update) =>
+      allowUpdates.includes(update)
+    );
+
+    if (!isValidateOperation) {
+      return res.status(400).send({
+        status: "fail",
+        message: "Invalid updates",
+      });
+    }
+
+    const task = await Task.findById(req.params.id);
+    updates.forEach((update) => (task[update] = req.body[update]));
+    await task.save();
+    // const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
+    //   new: true,
+    //   runValidators: true,
+    // });
     if (!task) {
       return res.status(404).send({
         status: "not found",
@@ -87,6 +106,8 @@ exports.updateTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
   try {
     const task = await Task.findByIdAndDelete(req.params.id);
+    const CountDoc = await task.countDocuments({ completed: false });
+
     if (!task) {
       return res.status(404).send({
         status: "not found",
@@ -96,6 +117,7 @@ exports.deleteTask = async (req, res) => {
     res.status(204).send({
       status: "success",
       message: "user deleted successfully",
+      CountDoc,
     });
   } catch (error) {
     res.status(400).send({

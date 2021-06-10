@@ -62,7 +62,21 @@ exports.getSingleUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body);
+    const updates = Object.keys(req.body);
+    const allowUpdates = ["name", "email", "password"];
+    const isValidateOperation = updates.every((updates) =>
+      allowUpdates.includes(updates)
+    );
+
+    if (!isValidateOperation) {
+      return res.status(400).send({
+        status: "fail",
+        message: "Invalid updates",
+      });
+    }
+    const user = await User.findById(req.params.id);
+    updates.forEach((update) => (user[update] = req.body[update]));
+    await user.save();
 
     if (!user) {
       return res.status(404).send({
