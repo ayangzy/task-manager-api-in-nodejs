@@ -3,11 +3,13 @@ const User = require("../models/userModel");
 exports.createUser = async (req, res, next) => {
   try {
     const newUser = await User.create(req.body);
+    const token = await newUser.generateAuthToken();
     res.status(201).send({
       status: "success",
       message: "User Created successfully",
       data: {
         data: newUser,
+        token,
       },
     });
   } catch (error) {
@@ -66,10 +68,12 @@ exports.login = async (req, res) => {
       req.body.email,
       req.body.password
     );
+    const token = await user.generateAuthToken();
     res.status(200).send({
       status: "success",
       message: "successfully logged in",
       user,
+      token,
     });
   } catch (error) {
     res.status("400").send({
