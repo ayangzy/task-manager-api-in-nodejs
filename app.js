@@ -6,6 +6,17 @@ const app = express();
 
 dotenv.config({ path: "./config.env" });
 
+// app.use((req, res, next) => {
+//   if (req.method === "GET") {
+//     res.send("Get request are disabled");
+//   } else {
+//     next();
+//   }
+// });
+
+// app.use((req, res, next) => {
+//   res.status(503).send("site is currently down, check back soon");
+// });
 //Saving static files
 app.use(express.static(`${__dirname}/public`));
 
